@@ -2,6 +2,10 @@
 import sys
 import numpy as np
 from map import MAP
+import time
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+
 
 
 class AStar:
@@ -12,6 +16,14 @@ class AStar:
         self.start_point = None
         self.end_point = None
         self.heuristic_name = heuristic_name
+
+
+
+    @staticmethod
+    def time_decay_factor(start_time, current_time, decay_rate):
+        elapsed_time = current_time - start_time
+        decay_factor = max(5 - decay_rate * elapsed_time, 0)
+        return decay_factor
 
     # 计算当前点的历史行驶距离
     def BaseCost(self, p):
@@ -64,8 +76,11 @@ class AStar:
         dis = np.sqrt(x_dis + y_dis)
         return dis
 
-    # 总成本
+
     def TotalCost(self, p):
+        # 总成本
+        current_time = time.time()
+        decay_factor = AStar.time_decay_factor(self.start_time, current_time, 0.1)
         # weight = p.weight * 10
         # if self.heuristic_name == "Hn":
         #     return self.BaseCost(p) + self.HeuristicCost(p) + weight
@@ -85,19 +100,29 @@ class AStar:
         weight = p.weight * 10
         if self.heuristic_name == "Hn":
            # return p.area * 10 * (self.BaseCost(p) + self.HeuristicCost(p) + weight)   # 根据区域给节点赋予不同的权重,区域影响作为系数存在
-           return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area * 10
+           # return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_new * 10 # 动态规划，添加时间因子作为权重的一部分。
+           # return self.BaseCost(p) + self.HeuristicCost(p) + weight
+           return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_old * 10
+           # return self.BaseCost(p) + p.area_new * 10 * self.HeuristicCost(p) + weight + p.area_old * 10
+
         if self.heuristic_name == "Man":
-            return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight
+            return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight + p.area_new * 10
+            # return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight + p.area_old * 10
         if self.heuristic_name == "Euc":
-            return self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight + p.area * 10
+            # return self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight + p.area_new * 10
+            return self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight + p.area_old * 10
         if self.heuristic_name == "Che":
-            return self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight + p.area * 10
+            # return self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight + p.area_new * 10
+            return self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight + p.area_old * 10
         if self.heuristic_name == "Dia":
-            return self.BaseCost(p) + self.HeuristicCost_DiaD(p) + weight + p.area * 10
+            # return self.BaseCost(p) + self.HeuristicCost_DiaD(p) + weight + p.area_new * 10
+            return self.BaseCost(p) + self.HeuristicCost_DiaD(p) + weight + p.area_old * 10
         if self.heuristic_name == "WMan":
-            return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight + p.area * 10
+            # return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight + p.area_new * 10
+            return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight + p.area_old * 10
         if self.heuristic_name == "WEuc":
-            return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area * 10
+            # return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_new * 10
+            return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_old * 10
 
     # 判断点是否有效
     def IsValidPoint(self, x, y):
@@ -138,7 +163,8 @@ class AStar:
         if not self.IsInOpenList(p):
             p.parent = parent
             p.cost = self.TotalCost(p)
-            p.area = p.get_point_area() #获取节点区域
+            p.area_old = p.get_point_area_old() #获取节点区域
+            p.area_new = p.get_point_area_new()
             self.open_set.append(p)
 
     def SelectPointInOpenList(self):
@@ -191,7 +217,10 @@ class AStar:
         self.end_point = self.map.point_list[x][y]
 
     # 路径规划主入口
+
     def find_one_path(self):
+        self.start_time = time.time()
+
         self.open_set = []
         self.close_set = []
 
@@ -203,23 +232,28 @@ class AStar:
                 return
             p = self.open_set[index]
 
+            # 更新绘图，显示搜索过程
+            # if map_handle is not None:
+            #     self.update_plot(map_handle, p, self.open_set)
+
             if self.IsEndPoint(p):
                 return self.BuildPath(p)
 
             del self.open_set[index]
             self.close_set.append(p)
 
+
             # Process all neighbors
             x = p.x
             y = p.y
             # 4 adjacency search
-            for step in [[0, 1], [0, -1],
-                         [1, 0], [-1, 0]]:
-            # # 8 adjacency search
             # for step in [[0, 1], [0, -1],
-            #              [1, 0], [-1, 0],
-            #              [1, 1], [-1, -1],
-            #              [1, -1], [-1, 1]]:
+            #              [1, 0], [-1, 0]]:
+            # # 8 adjacency search
+            for step in [[0, 1], [0, -1],
+                         [1, 0], [-1, 0],
+                         [1, 1], [-1, -1],
+                         [1, -1], [-1, 1]]:
             # 16 adjacency search
             # for step in [[0, 1], [0, -1],
             #              [1, 0], [-1, 0],
@@ -232,6 +266,7 @@ class AStar:
 
                 self.ProcessPoint(x + step[0], y + step[1], p)
 
+            # self.update_plot(map_handle, p, self.open_set, self.heuristic_name)
     def check_path(self, one_path):
         for point in one_path:
             if self.map.point_list[point[0]][point[1]].is_barrier:
@@ -242,8 +277,8 @@ class AStar:
 
 if __name__ == "__main__":
     # 地图最大长度，宽度
-    X_MAX_LEN = 20
-    Y_MAX_LEN = 20
+    X_MAX_LEN = 30
+    Y_MAX_LEN = 30
     map_handle = MAP(x_len=X_MAX_LEN, y_len=Y_MAX_LEN)
 
     # 设置障碍点以及权重
@@ -261,6 +296,12 @@ if __name__ == "__main__":
     map_handle.add_barrier_point(8, 15, 2)
     map_handle.add_barrier_point(10, 14, 3)
     map_handle.add_barrier_point(17, 16, 0)
+    map_handle.add_barrier_point(0, 10, 2)
+    map_handle.add_barrier_point(1, 11, 10)
+    map_handle.add_barrier_point(2, 13, 0)
+    map_handle.add_barrier_point(6, 15, 5)
+    map_handle.add_barrier_point(5, 16, 3)
+    map_handle.add_barrier_point(5, 17, 0)
     map_handle.update_barrier_round()
     # 遍历所有的启发式方法
     for name in ['Hn', 'Man', 'Euc', 'Che', 'Dia', 'WMan', 'WEuc']:
@@ -270,21 +311,26 @@ if __name__ == "__main__":
         # astar_handle = AStar(map=map_handle, heuristic_name='Che')
         # astar_handle = AStar(map=map_handle, heuristic_name='Dia')
         # 设置起点 终点
-        start_point = [0, 1]
-        end_point = [17, 12]
+        start_point = [0, 0]
+        end_point = [12, 12]
         astar_handle.set_start_point(start_point[0], start_point[1])
         astar_handle.set_end_point(end_point[0], end_point[1])
         map_handle.add_start_point(start_point[1], start_point[0])
         map_handle.add_end_point(end_point[1], end_point[0])
         # 计算路径
+        start_time = time.time()
         one_path = astar_handle.find_one_path()
         assert astar_handle.check_path(one_path)
+        end_time = time.time()
+        # elapsed_time = end_time - start_time
         print("Heuristic name:", 'Hn', "path len:", len(one_path))
         # print("Heuristic name:", 'Man', "path len:", len(one_path))
         # print("Heuristic name:", 'Euc', "path len:", len(one_path))
         # print("Heuristic name:", 'Che', "path len:", len(one_path))
         # print("Heuristic name:", 'Dia', "path len:", len(one_path))
         print(one_path)
+        elapsed_time = end_time - start_time
+        print("Algorithm running time:", elapsed_time, "s")
         # 画图
         map_handle.add_path(one_path)
         map_handle.plot(_name='Hn')
@@ -292,4 +338,6 @@ if __name__ == "__main__":
         # map_handle.plot(_name='Euc')
         # map_handle.plot(_name='Che')
         # map_handle.plot(_name='Dia')
+
+
         break

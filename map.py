@@ -98,11 +98,11 @@ class MAP:
 
 
 
-if __name__ == "__main__":
-    map_handle = MAP(x_len=20, y_len=20)
-    for x in range(3, 11):
-        map_handle.add_barrier_point(x, 10)
-        map_handle.add_barrier_point(10, x)
-    map_handle.add_end_point(18, 18)
-    map_handle.add_end_point(7, 8)
-    map_handle.plot()
+# if __name__ == "__main__":
+#     map_handle = MAP(x_len=20, y_len=20)
+#     for x in range(3, 11):
+#         map_handle.add_barrier_point(x, 10)
+#         map_handle.add_barrier_point(10, x)
+#     map_handle.add_end_point(18, 18)
+#     map_handle.add_end_point(7, 8)
+#     map_handle.plot()
