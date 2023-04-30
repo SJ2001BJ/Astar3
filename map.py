@@ -1,5 +1,6 @@
 from point import Point
 import numpy as np
+import matplotlib.pyplot as plt
 np.random.seed(2022)
 
 
@@ -76,8 +77,18 @@ class MAP:
         for p in path[1:-1]:
             self.map_grid[p[0]][p[1]] = 3
 
-    def plot(self, _name):
-        import matplotlib.pyplot as plt
+    def linear_interpolation(self, point1, point2, num_points):
+        x1, y1 = point1
+        x2, y2 = point2
+        x_values = np.linspace(x1, x2, num_points + 2)[1:-1]
+        y_values = np.linspace(y1, y2, num_points + 2)[1:-1]
+        return list(zip(x_values, y_values))
+
+    def plot(self, _name, path):
+
+
+
+
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(self.map_grid.T,
                    cmap=plt.cm.viridis,
@@ -91,9 +102,25 @@ class MAP:
         plt.xticks(my_x_ticks)
         plt.yticks(my_y_ticks)
         plt.grid(True)
+
+        num_points = 100  # 您可以更改这个值以获得不同的平滑程度
+        smoothed_path = []
+        for i in range(len(path) - 1):
+            smoothed_path.append(path[i])
+            smoothed_path.extend(self.linear_interpolation(path[i], path[i + 1], num_points))
+        smoothed_path.append(path[-1])
+
+        x, y = zip(*path)
+        plt.plot(x, y, color='red', linewidth=2)
+
+        # x, y = zip(*smoothed_path)
+        # plt.plot(x, y, linestyle='-', color='red', linewidth=2)
+
         plt.savefig("{}.png".format(_name), dpi=300)
         plt.show()
         plt.close()
+
+
 
 
 

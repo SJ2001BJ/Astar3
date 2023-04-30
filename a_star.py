@@ -102,8 +102,8 @@ class AStar:
            # return p.area * 10 * (self.BaseCost(p) + self.HeuristicCost(p) + weight)   # 根据区域给节点赋予不同的权重,区域影响作为系数存在
            # return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_new * 10 # 动态规划，添加时间因子作为权重的一部分。
            # return self.BaseCost(p) + self.HeuristicCost(p) + weight
-           return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_old * 10
-           # return self.BaseCost(p) + p.area_new * 10 * self.HeuristicCost(p) + weight + p.area_old * 10
+           # return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_old * 10
+           return self.BaseCost(p) + p.area_new * 10 * self.HeuristicCost(p) + weight + p.area_old * 10
 
         if self.heuristic_name == "Man":
             return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight + p.area_new * 10
@@ -232,9 +232,6 @@ class AStar:
                 return
             p = self.open_set[index]
 
-            # 更新绘图，显示搜索过程
-            # if map_handle is not None:
-            #     self.update_plot(map_handle, p, self.open_set)
 
             if self.IsEndPoint(p):
                 return self.BuildPath(p)
@@ -287,9 +284,9 @@ if __name__ == "__main__":
     #     map_handle.add_barrier_point(10, x, 5)
     map_handle.add_barrier_point(16, 8, 2)
     map_handle.add_barrier_point(8, 10, 0)
-    map_handle.add_barrier_point(11, 3, 1)
+    map_handle.add_barrier_point(11, 3, 6)
     map_handle.add_barrier_point(7, 9, 3)
-    map_handle.add_barrier_point(12, 1, 5)
+    map_handle.add_barrier_point(12, 1, 10)
     map_handle.add_barrier_point(18, 9, 0)
     map_handle.add_barrier_point(4, 5, 3)
     map_handle.add_barrier_point(7, 8, 3)
@@ -333,7 +330,7 @@ if __name__ == "__main__":
         print("Algorithm running time:", elapsed_time, "s")
         # 画图
         map_handle.add_path(one_path)
-        map_handle.plot(_name='Hn')
+        map_handle.plot(_name='Hn', path = one_path)
         # map_handle.plot(_name='Man')
         # map_handle.plot(_name='Euc')
         # map_handle.plot(_name='Che')
