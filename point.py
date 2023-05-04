@@ -14,23 +14,22 @@ class Point:
         根据坐标范围划分不同的区域，并为每个区域分配不同的权重
         """
         if self.x < 10 and self.y < 10:
-            return 1+(10-((self.x + self.y) / (10 + 10)))
+            return 1+(5-((self.x + self.y) / (9 + 9)))
         elif self.x < 10 and self.y >= 10:
             return 5
         elif self.x >= 10 and self.y < 10:
             return 3
         else:
-            return 4
+            return 10
 
     def get_point_area_old(self):
         """
         根据坐标范围划分不同的区域，并为每个区域分配不同的权重
         """
-        if self.x < 10 and self.y < 10:
-            return 0
-        elif self.x < 10 and self.y >= 10:
-            return 5
-        elif self.x >= 10 and self.y < 10:
-            return 3
+        if self.x < 10 and self.y < 5:
+            return 10
+
+        elif self.x > 10 and self.y > 5:  # 添加一个特殊条件以覆盖坐标（9，7）至坐标（9，10）的范围
+            return 10
         else:
-            return 4
+            return 1

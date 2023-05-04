@@ -1,6 +1,7 @@
 from point import Point
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 np.random.seed(2022)
 
 
@@ -15,6 +16,8 @@ class MAP:
     def IsObstacle(self, x, y):
         return self.point_list[x][y].is_barrier
 
+
+
     def random_barrier(self, rate=0.1):
         barrier_point_num = int(self.x_len * self.y_len * rate)
         cur_num = 0
@@ -28,6 +31,7 @@ class MAP:
     def round_point(self, x, y, weight):
         _weight = weight
         idx = 1
+
         while _weight > 0:
             if 0 <= x - idx < self.x_len:
                 if not self.point_list[x - idx][y].is_barrier:
@@ -85,10 +89,6 @@ class MAP:
         return list(zip(x_values, y_values))
 
     def plot(self, _name, path):
-
-
-
-
         fig = plt.figure(figsize=(10, 10))
         plt.imshow(self.map_grid.T,
                    cmap=plt.cm.viridis,
@@ -103,27 +103,39 @@ class MAP:
         plt.yticks(my_y_ticks)
         plt.grid(True)
 
-        num_points = 100  # 您可以更改这个值以获得不同的平滑程度
-        smoothed_path = []
-        for i in range(len(path) - 1):
-            smoothed_path.append(path[i])
-            smoothed_path.extend(self.linear_interpolation(path[i], path[i + 1], num_points))
-        smoothed_path.append(path[-1])
+        # num_points = 100  # 您可以更改这个值以获得不同的平滑程度
+        # smoothed_path = []
+        # for i in range(len(path) - 1):
+        #     smoothed_path.append(path[i])
+        #     smoothed_path.extend(self.linear_interpolation(path[i], path[i + 1], num_points))
+        # smoothed_path.append(path[-1])
 
         x, y = zip(*path)
         plt.plot(x, y, color='red', linewidth=2)
 
-        # x, y = zip(*smoothed_path)
-        # plt.plot(x, y, linestyle='-', color='red', linewidth=2)
 
         plt.savefig("{}.png".format(_name), dpi=300)
         plt.show()
         plt.close()
 
-
-
-
-
+    # def plot(self, _name):
+    #     import matplotlib.pyplot as plt
+    #     fig = plt.figure(figsize=(10, 10))
+    #     plt.imshow(self.map_grid.T,
+    #                cmap=plt.cm.viridis,
+    #                interpolation='nearest',
+    #                vmin=0, vmax=10,
+    #                aspect='auto')
+    #     plt.xlim(-1, self.x_len)  # 设置x轴范围
+    #     plt.ylim(-1, self.y_len)  # 设置y轴范围
+    #     my_x_ticks = np.arange(0, self.x_len, 1)
+    #     my_y_ticks = np.arange(0, self.y_len, 1)
+    #     plt.xticks(my_x_ticks)
+    #     plt.yticks(my_y_ticks)
+    #     plt.grid(True)
+    #     plt.savefig("{}.png".format(_name), dpi=300)
+    #     plt.show()
+    #     plt.close()
 
 # if __name__ == "__main__":
 #     map_handle = MAP(x_len=20, y_len=20)
