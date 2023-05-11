@@ -26,10 +26,35 @@ class Point:
         """
         根据坐标范围划分不同的区域，并为每个区域分配不同的权重
         """
-        if self.x < 10 and self.y < 5:
-            return 10
+        # for wheelchair and visually impaired
+        # if 0 <= self.x <= 3 and 8 <= self.y <= 12:
+        #     return 5
+        #
+        # elif 1 <= self.x <= 12 and 9 <= self.y <= 17:
+        #     return 4
+        #
+        # elif 12 <= self.x <= 17 and 13 <= self.y <= 17:
+        #     return 3
+        #
+        # elif 19 <= self.x <= 19 and 13 <= self.y <= 18:
+        #     return 3
+        #
+        # elif 1 <= self.x <= 1 and 3 <= self.y <= 7:
+        #     return 5
+        #
+        # else:
+        #     return 1
 
-        elif self.x > 10 and self.y > 5:  # 添加一个特殊条件以覆盖坐标（9，7）至坐标（9，10）的范围
-            return 10
+        # for people with hearing impaired
+        if 4 <= self.x <= 14 and 9 <= self.y <= 19:
+            return 3
+
+        elif 1 <= self.x <= 1 and 2 <= self.y <= 8:
+            return 4
+
+        elif 18 <= self.x <= 18 and 14 <= self.y <= 18:
+            return 0.2
+
         else:
             return 1
+

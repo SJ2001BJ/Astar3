@@ -35,7 +35,7 @@ class AStar:
         return x_dis + y_dis
 
     # 启发式函数-新
-    def HeuristicCost(self, p):
+    def HeuristicCost_new(self, p):
         x_dis = abs(p.x - self.end_point.x)
         y_dis = abs(p.y - self.end_point.y)
         return min(x_dis, y_dis)
@@ -86,6 +86,12 @@ class AStar:
                 return True
         return False
 
+    def HeuristicCost_h1(self, p):
+        x_dis = abs(p.x - self.end_point.x)
+        y_dis = abs(p.y - self.end_point.y)
+        dis = x_dis + y_dis
+        return dis
+
     def HeuristicCost_h2(self, p, close_set):
         if p.parent is None:
             return 99999
@@ -107,11 +113,7 @@ class AStar:
         dis = x_dis / y_dis
         return dis
 
-    def HeuristicCost_h1(self, p):
-        x_dis = abs(p.x - self.end_point.x)
-        y_dis = abs(p.y - self.end_point.y)
-        dis = x_dis + y_dis
-        return dis
+
 
     def TotalCost(self, p):
         # 总成本
@@ -119,7 +121,7 @@ class AStar:
         decay_factor = AStar.time_decay_factor(self.start_time, current_time, 0.1)
         # weight = p.weight * 10
         # if self.heuristic_name == "Hn":
-        #     return self.BaseCost(p) + self.HeuristicCost(p) + weight
+        #     return self.BaseCost(p) + self.HeuristicCost_new(p) + weight
         # if self.heuristic_name == "Man":
         #     return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight
         # if self.heuristic_name == "Euc":
@@ -132,33 +134,37 @@ class AStar:
         #     return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight
         # if self.heuristic_name == "WEuc":
         #     return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight
+        # if self.heuristic_name == "H2":
+        #     return self.BaseCost(p) + 2 * self.HeuristicCost_h2(p, self.close_set) + 2 * self.HeuristicCost_h1(p) + weight
 
         weight = p.weight * 10
         if self.heuristic_name == "Hn":
-           # return p.area * 10 * (self.BaseCost(p) + self.HeuristicCost(p) + weight)   # 根据区域给节点赋予不同的权重,区域影响作为系数存在
-           # return self.BaseCost(p) + self.HeuristicCost(p) + weight + p.area_new * 10 # 动态规划，添加时间因子作为权重的一部分。
-           # return self.BaseCost(p) + self.HeuristicCost(p) + weight
-           return   self.BaseCost(p) + self.HeuristicCost(p) + weight
-           # return self.BaseCost(p) + p.area_new * 10 * self.HeuristicCost(p) + weight + p.area_old * 10
+
+           # return self.BaseCost(p) + self.HeuristicCost_new(p) + weight + p.area_new * 10 # 动态规划，添加时间因子作为权重的一部分。
+           # return self.BaseCost(p) + self.HeuristicCost_new(p) + weight
+           return  p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_new(p) + weight
 
         if self.heuristic_name == "Man":
             # return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight + p.area_new * 10
-            return self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight + p.area_old * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_ManD(p) + weight
         if self.heuristic_name == "Euc":
             # return self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight + p.area_new * 10
-            return self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight + p.area_old * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_EucD(p) + weight
         if self.heuristic_name == "Che":
             # return self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight + p.area_new * 10
-            return self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight + p.area_old * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_CheD(p) + weight
         if self.heuristic_name == "Dia":
-            return  p.area_new * 10 * self.BaseCost(p) + self.HeuristicCost_DiaD(p) + weight
+            return  p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_DiaD(p) + weight
             # return p.area_old * 10 * self.BaseCost(p) + 3 * self.HeuristicCost_h2(p, self.close_set) + 3 * self.HeuristicCost_h1(p) + weight
         if self.heuristic_name == "WMan":
             # return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight + p.area_new * 10
-            return self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight + p.area_old * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_WManD(p) + weight
         if self.heuristic_name == "WEuc":
             # return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_new * 10
-            return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_old * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight
+        if self.heuristic_name == "H2":
+            # return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_new * 10
+            return p.area_old * 0.2 * self.BaseCost(p) + 2 * self.HeuristicCost_h2(p, self.close_set) + 2 * self.HeuristicCost_h1(p) + weight
 
     # 判断点是否有效
     def IsValidPoint(self, x, y):
@@ -199,8 +205,8 @@ class AStar:
         if not self.IsInOpenList(p):
             p.parent = parent
             p.cost = self.TotalCost(p)
-            p.area_old = p.get_point_area_old() #获取节点区域
-            p.area_new = p.get_point_area_new()
+            p.area_old = p.get_point_area_old() # mobile area design
+            p.area_new = p.get_point_area_new() # mobile area design
             self.open_set.append(p)
 
     def SelectPointInOpenList(self):
@@ -282,13 +288,13 @@ class AStar:
             x = p.x
             y = p.y
             # 4 adjacency search
-            for step in [[0, 1], [0, -1],
-                         [1, 0], [-1, 0]]:
-            # # 8 adjacency search
             # for step in [[0, 1], [0, -1],
-            #              [1, 0], [-1, 0],
-            #              [1, 1], [-1, -1],
-            #              [1, -1], [-1, 1]]:
+            #              [1, 0], [-1, 0]]:
+            # 8 adjacency search
+            for step in [[0, 1], [0, -1],
+                         [1, 0], [-1, 0],
+                         [1, 1], [-1, -1],
+                         [1, -1], [-1, 1]]:
             # 16 adjacency search
             # for step in [[0, 1], [0, -1],
             #              [1, 0], [-1, 0],
@@ -312,37 +318,99 @@ class AStar:
 
 if __name__ == "__main__":
     # 地图最大长度，宽度
-    X_MAX_LEN = 30
-    Y_MAX_LEN = 30
+    X_MAX_LEN = 20
+    Y_MAX_LEN = 20
     map_handle = MAP(x_len=X_MAX_LEN, y_len=Y_MAX_LEN)
 
+    # Wheelchair people and Visually Imparied People 20x20 map1
     # 设置障碍点以及权重
-    # for x in range(3, 11):
-    #     map_handle.add_barrier_point(x, 10, 5)
-    #     map_handle.add_barrier_point(10, x, 5)
-    map_handle.add_barrier_point(7, 9, 3)
-    map_handle.add_barrier_point(12, 1, 10)
-    map_handle.add_barrier_point(18, 9, 0)
-    map_handle.add_barrier_point(4, 5, 0)
-    map_handle.add_barrier_point(7, 8, 3)
-    map_handle.add_barrier_point(8, 15, 2)
-    map_handle.add_barrier_point(10, 14, 3)
-    map_handle.add_barrier_point(17, 16, 0)
-    map_handle.add_barrier_point(0, 10, 2)
-    map_handle.add_barrier_point(1, 11, 10)
-    map_handle.add_barrier_point(2, 13, 0)
-    map_handle.add_barrier_point(5, 5, 0)
-    map_handle.add_barrier_point(2, 4, 3)
-    map_handle.add_barrier_point(3, 8, 2)
-    map_handle.add_barrier_point(10, 16, 3)
+    # map_handle.add_barrier_point(7, 9, 2)
+    # map_handle.add_barrier_point(12, 1, 2)
+    # map_handle.add_barrier_point(18, 9, 1)
+    # map_handle.add_barrier_point(4, 5, 7)
+    # map_handle.add_barrier_point(7, 8, 7)
+    # map_handle.add_barrier_point(8, 15, 7)
+    # map_handle.add_barrier_point(10, 14, 2)
+    # map_handle.add_barrier_point(17, 16, 2)
+    # map_handle.add_barrier_point(0, 3, 1)
+    # map_handle.add_barrier_point(0, 4, 1)
+    # map_handle.add_barrier_point(0, 5, 1)
+    # map_handle.add_barrier_point(0, 6, 1)
+    # map_handle.add_barrier_point(1, 11, 3)
+    # map_handle.add_barrier_point(2, 13, 3)
+    # map_handle.add_barrier_point(5, 5, 3)
+    # map_handle.add_barrier_point(10, 16, 6)
+
+    # Wheelchair people 20x20 map2
+    # for x in range(3, 7):
+    #     for y in range(4):
+    #         map_handle.add_barrier_point(x, y, 2)
+    # for x in range(10, 15):
+    #     for y in range(4, 9):
+    #         map_handle.add_barrier_point(x, y, 1)
+    #
+    # # 设置从(6, 16)至(6, 12)的垂直障碍物
+    # for y in range(12, 17):
+    #     map_handle.add_barrier_point(6, y, 5)
+    #
+    # # 设置从(6, 12)至(9, 12)的水平障碍物
+    # for x in range(6, 10):
+    #     map_handle.add_barrier_point(x, 12, 5)
+    #
+    # map_handle.add_barrier_point(7, 9, 2)
+    # map_handle.add_barrier_point(12, 1, 2)
+    # map_handle.add_barrier_point(18, 9, 1)
+    # map_handle.add_barrier_point(4, 5, 7)
+    # map_handle.add_barrier_point(7, 8, 7)
+    # map_handle.add_barrier_point(8, 15, 7)
+    # map_handle.add_barrier_point(10, 14, 2)
+    # map_handle.add_barrier_point(17, 16, 2)
+    # map_handle.add_barrier_point(0, 3, 1)
+    # map_handle.add_barrier_point(0, 4, 1)
+    # map_handle.add_barrier_point(0, 5, 1)
+    # map_handle.add_barrier_point(0, 6, 1)
+    # map_handle.add_barrier_point(1, 11, 3)
+    # map_handle.add_barrier_point(2, 13, 3)
+    # map_handle.add_barrier_point(5, 5, 3)
+    # map_handle.add_barrier_point(10, 16, 6)
+
+
+    # Hearing Imparied people 20x20 map3
+    for x in range(3, 7):
+        for y in range(4):
+            map_handle.add_barrier_point(x, y, 5)
+    for x in range(10, 15):
+        for y in range(4, 9):
+            map_handle.add_barrier_point(x, y, 6)
+    for x in range(6, 11):
+        for y in range(12, 17):
+            map_handle.add_barrier_point(x, y, 4)
+
+    map_handle.add_barrier_point(7, 9, 1)
+    map_handle.add_barrier_point(12, 1, 1)
+    map_handle.add_barrier_point(18, 9, 1)
+    map_handle.add_barrier_point(4, 5, 1)
+    map_handle.add_barrier_point(7, 8, 1)
+    map_handle.add_barrier_point(8, 15, 1)
+    map_handle.add_barrier_point(10, 14, 1)
+    map_handle.add_barrier_point(17, 16, 1)
+    map_handle.add_barrier_point(0, 3, 1)
+    map_handle.add_barrier_point(0, 4, 1)
+    map_handle.add_barrier_point(0, 5, 1)
+    map_handle.add_barrier_point(0, 6, 1)
+    map_handle.add_barrier_point(1, 11, 1)
+    map_handle.add_barrier_point(2, 13, 1)
+    map_handle.add_barrier_point(5, 5, 1)
+
     map_handle.update_barrier_round()
     # 遍历所有的启发式方法
-    for name in ['Hn', 'Man', 'Euc', 'Che', 'Dia', 'WMan', 'WEuc']:
-        astar_handle = AStar(map=map_handle, heuristic_name='Hn')
+    for name in ['Hn', 'Man', 'Euc', 'Che', 'Dia', 'WMan', 'WEuc', 'H2']:
+        # astar_handle = AStar(map=map_handle, heuristic_name='Hn')
         # astar_handle = AStar(map=map_handle, heuristic_name='Man')
         # astar_handle = AStar(map=map_handle, heuristic_name='Euc')
         # astar_handle = AStar(map=map_handle, heuristic_name='Che')
         # astar_handle = AStar(map=map_handle, heuristic_name='Dia')
+        astar_handle = AStar(map=map_handle, heuristic_name='H2')
         # 设置起点 终点
         start_point = [0, 0]
         end_point = [12, 12]
@@ -356,21 +424,22 @@ if __name__ == "__main__":
         assert astar_handle.check_path(one_path)
         end_time = time.time()
         # elapsed_time = end_time - start_time
-        print("Heuristic name:", 'Hn', "path len:", len(one_path))
+        # print("Heuristic name:", 'Hn', "path len:", len(one_path))
         # print("Heuristic name:", 'Man', "path len:", len(one_path))
         # print("Heuristic name:", 'Euc', "path len:", len(one_path))
         # print("Heuristic name:", 'Che', "path len:", len(one_path))
         # print("Heuristic name:", 'Dia', "path len:", len(one_path))
+        print("Heuristic name:", 'H2', "path len:", len(one_path))
         print(one_path)
         elapsed_time = end_time - start_time
         print("Algorithm running time:", elapsed_time, "s")
         # 画图
         map_handle.add_path(one_path)
-        map_handle.plot(_name='Hn', path = one_path)
+        # map_handle.plot(_name='Hn', path = one_path)
         # map_handle.plot(_name='Man', path = one_path)
         # map_handle.plot(_name='Euc', path = one_path)
-        # map_handle.plot(_name='Che')
+        # map_handle.plot(_name='Che', path = one_path)
         # map_handle.plot(_name='Dia',path = one_path)
-
+        map_handle.plot(_name='H2', path = one_path)
 
         break
