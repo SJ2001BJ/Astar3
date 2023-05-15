@@ -101,8 +101,8 @@ class AStar:
         for i in range(-1, 2):
             for j in range(-1, 2):
                 if self.is_valid_and_not_in_close_list(p.x + i, p.y + j, close_set):
-                    next_x = p.x + i  # 下一个节点的横坐标
-                    next_y = p.y + j  # 下一个节点的纵坐标
+                    next_x = p.x + i  # The abscissa of the next node
+                    next_y = p.y + j  # The vertical coordinate of the next node
                     break
 
         if next_x is None or next_y is None:
@@ -140,7 +140,7 @@ class AStar:
         weight = p.weight * 10
         if self.heuristic_name == "Hn":
 
-           # return self.BaseCost(p) + self.HeuristicCost_new(p) + weight + p.area_new * 10 # 动态规划，添加时间因子作为权重的一部分。
+           # return self.BaseCost(p) + self.HeuristicCost_new(p) + weight + p.area_new * 10 # Dynamic programming, adding a time factor as part of the weights.
            # return self.BaseCost(p) + self.HeuristicCost_new(p) + weight
            return  p.area_old * 0.2 * self.BaseCost(p) + self.HeuristicCost_new(p) + weight
 
@@ -234,7 +234,7 @@ class AStar:
 
     def set_start_point(self, x, y):
         if self.map.point_list[x][y].is_barrier:
-            print("出发点和到达点请从以下列表中选择:")
+            print("Departure and arrival points please choose from the list below:")
             point_list = []
             for i in range(self.map.x_len):
                 for j in range(self.map.y_len):
@@ -247,7 +247,7 @@ class AStar:
 
     def set_end_point(self, x, y):
         if self.map.point_list[x][y].is_barrier:
-            print("出发点和到达点请从以下列表中选择:")
+            print("Departure and arrival points please choose from the list below:")
             point_list = []
             for i in range(self.map.x_len):
                 for j in range(self.map.y_len):

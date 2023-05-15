@@ -6,12 +6,12 @@ class Point:
         self.parent = None
         self.weight = weight
         self.is_barrier = is_barrier
-        self.area_new = self.get_point_area_new()   #增加一个属性表示节点所在的区域, 新区域函数
-        self.area_old = self.get_point_area_old()   #增加一个属性表示节点所在的区域， 旧区域函数
+        self.area_new = self.get_point_area_new()   #Add an attribute to indicate the area where the node is located, the new area function
+        self.area_old = self.get_point_area_old()   # Add an attribute to indicate the area where the node is located, the old area function
         self.color = None
     def get_point_area_new(self):
         """
-        根据坐标范围划分不同的区域，并为每个区域分配不同的权重
+        Divide different regions according to the coordinate range, and assign different weights to each region
         """
         if self.x < 10 and self.y < 10:
             return 1+(5-((self.x + self.y) / (9 + 9)))
@@ -24,7 +24,7 @@ class Point:
 
     def get_point_area_old(self):
         """
-        根据坐标范围划分不同的区域，并为每个区域分配不同的权重
+        Divide different regions according to the coordinate range, and assign different weights to each region
         """
         # for wheelchair and visually impaired
         # if 0 <= self.x <= 3 and 8 <= self.y <= 12:

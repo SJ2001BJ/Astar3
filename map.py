@@ -95,15 +95,15 @@ class MAP:
                    interpolation='nearest',
                    vmin=0, vmax=10,
                    aspect='auto')
-        plt.xlim(-1, self.x_len)  # 设置x轴范围
-        plt.ylim(-1, self.y_len)  # 设置y轴范围
+        plt.xlim(-1, self.x_len)  # Set the x-axis range
+        plt.ylim(-1, self.y_len)  # Set the y-axis range
         my_x_ticks = np.arange(0, self.x_len, 1)
         my_y_ticks = np.arange(0, self.y_len, 1)
         plt.xticks(my_x_ticks)
         plt.yticks(my_y_ticks)
         plt.grid(True)
 
-        # num_points = 100  # 您可以更改这个值以获得不同的平滑程度
+        # num_points = 100  # You can change this value for different degrees of smoothing
         # smoothed_path = []
         # for i in range(len(path) - 1):
         #     smoothed_path.append(path[i])
