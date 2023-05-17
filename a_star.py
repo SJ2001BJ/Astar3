@@ -28,51 +28,51 @@ class AStar:
 
 
 
-    # 计算当前点的历史行驶距离
+    # Calculate the historical driving distance of the current point
     def BaseCost(self, p):
         x_dis = abs(p.x - self.start_point.x)
         y_dis = abs(p.y - self.start_point.y)
         return x_dis + y_dis
 
-    # 启发式函数-新
+    # heuristic function - new1
     def HeuristicCost_new(self, p):
         x_dis = abs(p.x - self.end_point.x)
         y_dis = abs(p.y - self.end_point.y)
         return min(x_dis, y_dis)
 
-    # 启发式函数-曼哈顿距离
+    # Heuristic function - Manhattan distance
     def HeuristicCost_ManD(self, p):
         x_dis = abs(p.x - self.end_point.x)
         y_dis = abs(p.y - self.end_point.y)
         return x_dis + y_dis
 
-    # 启发式函数-欧式距离
+    # Heuristic function - Euclidean distance
     def HeuristicCost_EucD(self, p):
         x_dis = abs(p.x - self.end_point.x) ** 2
         y_dis = abs(p.y - self.end_point.y) ** 2
         dis = np.sqrt(x_dis + y_dis)
         return dis
 
-    # 启发式函数-切比雪夫距离
+    # Heuristic function - Chebyshev distance
     def HeuristicCost_CheD(self, p):
         x_dis = abs(p.x - self.end_point.x)
         y_dis = abs(p.y - self.end_point.y)
         return max(x_dis, y_dis)
 
-    # 启发式函数-对角线距离
+    # Heuristic Function - Diagonal Distance
     def HeuristicCost_DiaD(self, p):
         x_dis = abs(p.x - self.end_point.x)
         y_dis = abs(p.y - self.end_point.y)
         dis = np.sqrt(x_dis + y_dis)
         return dis
 
-    # 启发式函数-加权曼哈顿距离
+    # Heuristic Function - Weighted Manhattan Distance
     def HeuristicCost_WManD(self, p):
         x_dis = 1.1 * abs(p.x - self.end_point.x)
         y_dis = 1.2 * abs(p.y - self.end_point.y)
         return max(x_dis, y_dis)
 
-    # 启发式函数-加权欧式距离
+    # Heuristic Function - Weighted Euclidean Distance
     def HeuristicCost_WEucD(self, p):
         x_dis = 1.1 * abs(p.x - self.end_point.x) ** 2
         y_dis = 1.2 * abs(p.y - self.end_point.y) ** 2
@@ -116,7 +116,7 @@ class AStar:
 
 
     def TotalCost(self, p):
-        # 总成本
+        # total cost
         current_time = time.time()
         decay_factor = AStar.time_decay_factor(self.start_time, current_time, 0.1)
         # weight = p.weight * 10
@@ -166,7 +166,7 @@ class AStar:
             # return self.BaseCost(p) + self.HeuristicCost_WEucD(p) + weight + p.area_new * 10
             return p.area_old * 0.2 * self.BaseCost(p) + 2 * self.HeuristicCost_h2(p, self.close_set) + 2 * self.HeuristicCost_h1(p) + weight
 
-    # 判断点是否有效
+    # Whether the judgment point is valid
     def IsValidPoint(self, x, y):
         if x < 0 or y < 0 or x >= X_MAX_LEN or y >= Y_MAX_LEN:
             return False
@@ -174,18 +174,18 @@ class AStar:
             return False
         return True
 
-    # 判断点是否在open-set
+    # Whether the judgment point is in open-set
     def IsInPointList(self, p, point_list):
         for point in point_list:
             if point.x == p.x and point.y == p.y:
                 return True
         return False
 
-    # 判断点是否在open-set
+    # Whether the judgment point is in open-set
     def IsInOpenList(self, p):
         return self.IsInPointList(p, self.open_set)
 
-    # 判断点是否在close-set
+    # Whether the judgment point is in the close-set
     def IsInCloseList(self, p):
         return self.IsInPointList(p, self.close_set)
 
@@ -221,7 +221,7 @@ class AStar:
             index += 1
         return selected_index
 
-    # 获取求得路径
+    # Get the path
     def BuildPath(self, p):
         path = []
         while True:
@@ -260,7 +260,7 @@ class AStar:
 
 
 
-    # 路径规划主入口
+    # Path planning main entrance
 
     def find_one_path(self):
         self.start_time = time.time()
@@ -317,13 +317,13 @@ class AStar:
 
 
 if __name__ == "__main__":
-    # 地图最大长度，宽度
+    # Map max length, width
     X_MAX_LEN = 20
     Y_MAX_LEN = 20
     map_handle = MAP(x_len=X_MAX_LEN, y_len=Y_MAX_LEN)
 
     # Wheelchair people and Visually Imparied People 20x20 map1
-    # 设置障碍点以及权重
+    # Set obstacle points and weights
     # map_handle.add_barrier_point(7, 9, 2)
     # map_handle.add_barrier_point(12, 1, 2)
     # map_handle.add_barrier_point(18, 9, 1)
@@ -349,11 +349,11 @@ if __name__ == "__main__":
     #     for y in range(4, 9):
     #         map_handle.add_barrier_point(x, y, 1)
     #
-    # # 设置从(6, 16)至(6, 12)的垂直障碍物
+    # 
     # for y in range(12, 17):
     #     map_handle.add_barrier_point(6, y, 5)
     #
-    # # 设置从(6, 12)至(9, 12)的水平障碍物
+    # 
     # for x in range(6, 10):
     #     map_handle.add_barrier_point(x, 12, 5)
     #
@@ -403,7 +403,7 @@ if __name__ == "__main__":
     map_handle.add_barrier_point(5, 5, 1)
 
     map_handle.update_barrier_round()
-    # 遍历所有的启发式方法
+    # Iterate over all heuristics
     for name in ['Hn', 'Man', 'Euc', 'Che', 'Dia', 'WMan', 'WEuc', 'H2']:
         # astar_handle = AStar(map=map_handle, heuristic_name='Hn')
         # astar_handle = AStar(map=map_handle, heuristic_name='Man')
@@ -411,14 +411,14 @@ if __name__ == "__main__":
         # astar_handle = AStar(map=map_handle, heuristic_name='Che')
         # astar_handle = AStar(map=map_handle, heuristic_name='Dia')
         astar_handle = AStar(map=map_handle, heuristic_name='H2')
-        # 设置起点 终点
+        # set start point end point
         start_point = [0, 0]
         end_point = [12, 12]
         astar_handle.set_start_point(start_point[0], start_point[1])
         astar_handle.set_end_point(end_point[0], end_point[1])
         map_handle.add_start_point(start_point[1], start_point[0])
         map_handle.add_end_point(end_point[1], end_point[0])
-        # 计算路径
+        # Calculation path
         start_time = time.time()
         one_path = astar_handle.find_one_path()
         assert astar_handle.check_path(one_path)
@@ -433,7 +433,7 @@ if __name__ == "__main__":
         print(one_path)
         elapsed_time = end_time - start_time
         print("Algorithm running time:", elapsed_time, "s")
-        # 画图
+        # draw
         map_handle.add_path(one_path)
         # map_handle.plot(_name='Hn', path = one_path)
         # map_handle.plot(_name='Man', path = one_path)
