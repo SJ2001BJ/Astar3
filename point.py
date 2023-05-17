@@ -11,7 +11,7 @@ class Point:
         self.color = None
     def get_point_area_new(self):
         """
-        Divide different regions according to the coordinate range, and assign different weights to each region
+        Divide different regions according to the coordinate range, and assign different weights to each region, for improve time efficiency
         """
         if self.x < 10 and self.y < 10:
             return 1+(5-((self.x + self.y) / (9 + 9)))
