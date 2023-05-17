@@ -27,7 +27,8 @@ class MAP:
             self.point_list[x][y].is_barrier = True
             cur_num += 1
             self.map_grid[x][y] = 0
-
+    
+    # weight diffusion model
     def round_point(self, x, y, weight):
         _weight = weight
         idx = 1
@@ -126,8 +127,8 @@ class MAP:
     #                interpolation='nearest',
     #                vmin=0, vmax=10,
     #                aspect='auto')
-    #     plt.xlim(-1, self.x_len)  # 设置x轴范围
-    #     plt.ylim(-1, self.y_len)  # 设置y轴范围
+    #     plt.xlim(-1, self.x_len)  
+    #     plt.ylim(-1, self.y_len)  
     #     my_x_ticks = np.arange(0, self.x_len, 1)
     #     my_y_ticks = np.arange(0, self.y_len, 1)
     #     plt.xticks(my_x_ticks)
